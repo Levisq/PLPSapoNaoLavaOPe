@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Grid
       Lib
   other-modules:
       Paths_Sapo
