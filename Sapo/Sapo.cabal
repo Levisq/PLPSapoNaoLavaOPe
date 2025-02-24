@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Grid
       Lib
   other-modules:
       Paths_Sapo
@@ -49,6 +50,7 @@ executable Sapo-exe
   build-depends:
       Sapo
     , base >=4.7 && <5
+    , gloss
   default-language: Haskell2010
 
 test-suite Sapo-test

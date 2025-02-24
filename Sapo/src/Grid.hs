@@ -1,3 +1,5 @@
+module Grid (Cell(..), getCell, updateCell) where
+
 -- Tipos de celula e deriving EQ serve para comparar tipos de Cell usando == /=
 -- Show Permite converter valores do tipo Cell em strings (útil para imprimir no terminal)
 data Cell = Empty | Water | Log | LilyPad | Player deriving (Eq, Show)
