@@ -1,25 +1,27 @@
 module Lib
-    ( posInicial--,
-      --refresh,
-      --movDir
+    ( posInicial,
+      mostraPos,
+      limpaPos,
+      movDir
     ) where
-        
-import Text.Printf (printf)
 
-posInicial :: IO ()
-posInicial = do 
-        let aux =  "                          S                          \n"
-        printf "%s" aux
+posInicial :: String
+posInicial =  "|--------------------------S--------------------------|"
+              
+mostraPos :: String -> IO()
+mostraPos pos = putStrLn pos
 
---refresh :: IO()
---refresh = putStrLn ""
+limpaPos :: String
+limpaPos = ""
 
---toString :: IO() -> String
---toString input =  show input >>= getLine
+movDir :: String -> String
+movDir posAtual = do 
+              let aux = drop 1 posAtual
+              let posAtualizada = init(init aux)
+              "|-" ++ posAtualizada ++ "|"
 
---movDir :: IO() -> IO()
---movDir posAtual = do 
---           let input <- posAtual
---           let output = read (init input)
---            putStrLn ("" ++ output)
+-- TO DO
+--identificaMov :: IO String -> String
+--identificaMov mov = if mov == 'd' then movDir 
+--                    else "Comando inválido!"
            

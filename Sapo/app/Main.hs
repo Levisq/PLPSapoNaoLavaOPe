@@ -3,6 +3,7 @@ module Main (main) where
 import Lib
 
 main :: IO ()
-main = posInicial
-    --input <- readLn
-    --movDir posInicial
+main = do 
+    mostraPos posInicial
+    input <- getLine
+    mostraPos (movDir posInicial)
