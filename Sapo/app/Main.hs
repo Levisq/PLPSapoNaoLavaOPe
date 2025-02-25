@@ -2,7 +2,7 @@ module Main where
 
 import Graphics.Gloss (Color, makeColor)
 import Graphics.Gloss.Interface.Pure.Game
-import Data.List (findIndex)
+import Data.List (findIndex, partition)
 import Grid (Cell(..), Grid, GameState(..), getCell, updateCell)
 import Objetos (Tronco(..), Regia(..), Sapo(..))
 
@@ -13,12 +13,12 @@ brown = makeColor 0.65 0.16 0.16 1.0
 initialState :: GameState
 initialState = GameState
   { grid = 
-      [ [Water, Water, Water, Water, RegiaCell (Regia (6,3) 1), Water, Water],  -- Linha 0
-        [Water, Water, RegiaCell (Regia (6,3) 1), Water, Water, Water, Water],  -- Linha 1
-        [Water, Water, Water, TroncoCell (Tronco (0,5) 1), Water, Water, Water],  -- Linha 2
-        [RegiaCell (Regia (6,3) 1), Water, Water, Water, Water, Water, Water],  -- Linha 3
-        [Water, Water, Water, RegiaCell (Regia (6,3) 1), Water, Water, Water],  -- Linha 4
-        [TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water, Water, Water],  -- Linha 5
+      [ [Water, Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water],  -- Linha 0
+        [Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water, Water],  -- Linha 1
+        [Water, Water, Water, TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water],  -- Linha 2
+        [RegiaCell (Regia (6,3) 2), Water, Water, Water, Water, Water, Water],  -- Linha 3
+        [Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water],  -- Linha 4
+        [TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water, Water],  -- Linha 5
         [Water, Water, Water, SapoCell (Sapo (3,6) 3), Water, Water, Water]   -- Linha 6
       ],
     timeSinceLastMove = 0.1
@@ -55,17 +55,13 @@ moveObjects grid = zipWith moveRow [0..] grid
 
     moveRow :: Int -> [Cell] -> [Cell]
     moveRow rowIndex row
-      | rowIndex == initialSapoRowIndex = row
-      | otherwise = case row of
-          [] -> []
-          _  -> let (movingCells, rest) = span isMovingCell (reverse row)
-                    newRow = reverse (movingCells ++ rest)
-                in tail newRow ++ [head newRow]
+      | rowIndex == initialSapoRowIndex = row  -- Mantemos a linha do sapo fixa
+      | otherwise =
+          let moveBy n list = drop n list ++ take n list  -- Função para deslocar elementos ciclicamente
+              troncoRow = if rowIndex `elem` [2, 5] then moveBy 1 row else row  -- Troncos se movem 1 posição
+              regiaRow = if rowIndex `elem` [0, 1, 3, 4] then moveBy 2 troncoRow else troncoRow  -- Vitórias-régias se movem 2 posições adicionais
+          in regiaRow
 
-    isMovingCell :: Cell -> Bool
-    isMovingCell (TroncoCell _) = True
-    isMovingCell (RegiaCell _) = True
-    isMovingCell _ = False
 
 -- Função de entrada (movimento do sapo)
 handleInput :: Event -> GameState -> GameState
