@@ -12,20 +12,21 @@ type Grid = [[Cell]]
 
 data GameState = GameState
   { grid :: Grid
+    ,timeSinceLastMove :: Float
   } deriving (Eq, Show)
 
 -- Acessa uma célula de forma segura
 getCell :: Grid -> (Int, Int) -> Maybe Cell
-getCell grid (x, y) =
-  if y >= 0 && y < length grid && x >= 0 && x < length (grid !! y)
-    then Just (grid !! y !! x)
+getCell g (x, y) =
+  if y >= 0 && y < length g && x >= 0 && x < length (g !! y)
+    then Just (g !! y !! x)
     else Nothing
 
--- Atualiza uma célula de forma segura
+-- att uma celula
 updateCell :: Grid -> (Int, Int) -> Cell -> Maybe Grid
-updateCell grid (x, y) newCell =
-  if y >= 0 && y < length grid && x >= 0 && x < length (grid !! y)
-    then Just (take y grid ++
-               [take x (grid !! y) ++ [newCell] ++ drop (x + 1) (grid !! y)] ++
-               drop (y + 1) grid)
+updateCell g (x, y) newCell =
+  if y >= 0 && y < length g && x >= 0 && x < length (g !! y)
+    then Just (take y g ++
+               [take x (g !! y) ++ [newCell] ++ drop (x + 1) (g !! y)] ++
+               drop (y + 1) g)
     else Nothing
