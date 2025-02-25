@@ -14,9 +14,9 @@ initialState :: GameState
 initialState = GameState
   { grid = 
       [ [Water, Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water],  -- Linha 0
-        [Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water, Water],  -- Linha 1
-        [Water, Water, Water, TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water],  -- Linha 2
-        [RegiaCell (Regia (6,3) 2), Water, Water, Water, Water, Water, Water],  -- Linha 3
+        [Water, Water, TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water],  -- Linha 1
+        [Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water],  -- Linha 2
+        [TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water, Water, Water],  -- Linha 3
         [Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water],  -- Linha 4
         [TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water, Water],  -- Linha 5
         [Water, Water, Water, SapoCell (Sapo (3,6) 3), Water, Water, Water]   -- Linha 6
@@ -42,7 +42,7 @@ render state =
 update :: Float -> GameState -> GameState
 update deltaTime state =
   let newTime = timeSinceLastMove state + deltaTime
-      moveInterval = 1.0  -- Tempo entre movimentos (em segundos)
+      moveInterval = 0.5  -- Tempo entre movimentos (em segundos)
   in if newTime >= moveInterval
      then state { grid = moveObjects (grid state), timeSinceLastMove = 0.0 }
      else state { timeSinceLastMove = newTime }
