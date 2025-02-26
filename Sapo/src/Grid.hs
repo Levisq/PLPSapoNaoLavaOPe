@@ -4,7 +4,7 @@ import Objetos (Tronco, Regia, Sapo)
 
 -- Tipos de celula e deriving EQ serve para comparar tipos de Cell usando == /=
 -- Show Permite converter valores do tipo Cell em strings (Acho que vai ser útil para imprimir no terminal)
-data Cell = Empty | Water | TroncoCell Tronco | RegiaCell Regia | SapoCell Sapo
+data Cell = Empty | Water | TroncoCell Tronco | RegiaCell Regia | SapoCell Sapo | Terra 
   deriving (Eq, Show)
 
 -- O grid é uma lista de listas de células

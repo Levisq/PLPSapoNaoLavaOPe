@@ -6,20 +6,33 @@ import Data.List (findIndex, partition)
 import Grid (Cell(..), Grid, GameState(..), getCell, updateCell)
 import Objetos (Tronco(..), Regia(..), Sapo(..))
 
+--Cores especificas da biblioteca Gloss
 brown :: Color
-brown = makeColor 0.65 0.16 0.16 1.0
+brown = makeColor 0.65 0.16 0.16 1.0  -- Marrom para Terra
+
+lightBlue :: Color
+lightBlue = makeColor 0.53 0.81 0.98 1.0  -- Azul claro para Água
+
+darkBrown :: Color
+darkBrown = makeColor 0.36 0.25 0.20 1.0  -- Marrom escuro para Troncos
+
+lightGreen :: Color
+lightGreen = makeColor 0.56 0.93 0.56 1.0  -- Verde claro para Vitórias-régias
+
+darkGreen :: Color
+darkGreen = makeColor 0.0 0.5 0.0 1.0  -- Verde escuro para o Sapo
 
 -- Estado inicial do jogo
 initialState :: GameState
 initialState = GameState
   { grid = 
-      [ [Water, Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water],  -- Linha 0
-        [Water, Water, TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water],  -- Linha 1
-        [Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water],  -- Linha 2
-        [TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water, Water, Water],  -- Linha 3
+      [ [Terra, Terra, Terra, Terra, Terra, Terra, Terra],  -- Linha 1
+        [Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water, Water],  -- Linha 2
+        [Water, Water, Water, TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water],  -- Linha 3
         [Water, Water, Water, RegiaCell (Regia (6,3) 2), Water, Water, Water],  -- Linha 4
-        [TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water, Water, Water, Water],  -- Linha 5
-        [Water, Water, Water, SapoCell (Sapo (3,6) 3), Water, Water, Water]   -- Linha 6
+        [Water, Water, Water, TroncoCell (Tronco (0,5) 1), TroncoCell (Tronco (0,5) 1), Water, Water],  -- Linha 5
+        [RegiaCell (Regia (6,3) 2), Water, Water, Water, Water, Water, Water],  -- Linha 6
+        [Terra, Terra, Terra, SapoCell (Sapo (3,6) 3), Terra, Terra, Terra]   -- Linha 7
       ],
     timeSinceLastMove = 0.1
   }
@@ -33,21 +46,21 @@ render state =
   where
     cellToPicture :: Cell -> Picture
     cellToPicture Empty = color white (rectangleWire 50 50)
-    cellToPicture Water = color blue (rectangleSolid 50 50)
-    cellToPicture (TroncoCell _) = color brown (rectangleSolid 50 50)
-    cellToPicture (RegiaCell _) = color red (rectangleSolid 50 50)
-    cellToPicture (SapoCell _) = color green (circleSolid 20)
-
+    cellToPicture Terra = color brown (rectangleSolid 50 50) 
+    cellToPicture Water = color lightBlue (rectangleSolid 50 50)
+    cellToPicture (TroncoCell _) = color darkBrown (rectangleSolid 50 50)
+    cellToPicture (RegiaCell _) = color lightGreen (rectangleSolid 50 50)
+    cellToPicture (SapoCell _) = color darkGreen (circleSolid 20)
 -- Função de atualização
 update :: Float -> GameState -> GameState
 update deltaTime state =
   let newTime = timeSinceLastMove state + deltaTime
-      moveInterval = 0.5  -- Tempo entre movimentos (em segundos)
+      moveInterval = 0.6  -- Tempo entre movimentos (em segundos)
   in if newTime >= moveInterval
      then state { grid = moveObjects (grid state), timeSinceLastMove = 0.0 }
      else state { timeSinceLastMove = newTime }
 
--- Função para mover troncos e vitórias-régias da direita para a esquerda
+-- Função para mover troncos e vitórias-régias de forma independente
 moveObjects :: Grid -> Grid
 moveObjects grid = zipWith moveRow [0..] grid
   where
@@ -56,12 +69,13 @@ moveObjects grid = zipWith moveRow [0..] grid
     moveRow :: Int -> [Cell] -> [Cell]
     moveRow rowIndex row
       | rowIndex == initialSapoRowIndex = row  -- Mantemos a linha do sapo fixa
-      | otherwise =
-          let moveBy n list = drop n list ++ take n list  -- Função para deslocar elementos ciclicamente
-              troncoRow = if rowIndex `elem` [2, 5] then moveBy 1 row else row  -- Troncos se movem 1 posição
-              regiaRow = if rowIndex `elem` [0, 1, 3, 4] then moveBy 2 troncoRow else troncoRow  -- Vitórias-régias se movem 2 posições adicionais
-          in regiaRow
-
+      | rowIndex == 3 = moveBy 1 row  -- Troncos na linha 3 se movem 1 posição
+      | rowIndex == 4 = moveBy 2 row  -- Vitórias-régias na linha 4 se movem 2 posições
+      | rowIndex `elem` [2, 5] = moveBy 1 row  -- Troncos nas linhas 2 e 5 se movem 1 posição
+      | rowIndex `elem` [0, 1, 4] = moveBy 2 row  -- Vitórias-régias nas linhas 0, 1 e 4 se movem 2 posições
+      | otherwise = row
+      where
+        moveBy n list = drop n list ++ take n list  -- Função para deslocar elementos ciclicamente
 
 -- Função de entrada (movimento do sapo)
 handleInput :: Event -> GameState -> GameState
