@@ -16,6 +16,7 @@ data GameState = GameState
   } deriving (Eq, Show)
 
 -- Acessa uma célula de forma segura
+--o !! serve para acesar um indice especifioc dentro da lista
 getCell :: Grid -> (Int, Int) -> Maybe Cell
 getCell g (x, y) =
   if y >= 0 && y < length g && x >= 0 && x < length (g !! y)
@@ -25,6 +26,7 @@ getCell g (x, y) =
 -- att uma celula
 updateCell :: Grid -> (Int, Int) -> Cell -> Maybe Grid
 updateCell g (x, y) newCell =
+  --verifica limites do x e y.
   if y >= 0 && y < length g && x >= 0 && x < length (g !! y)
     then Just (take y g ++
                [take x (g !! y) ++ [newCell] ++ drop (x + 1) (g !! y)] ++

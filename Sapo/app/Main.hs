@@ -79,10 +79,10 @@ moveObjects :: Grid -> Grid
 moveObjects = zipWith moveRow [0 ..]
   where
     initialSapoRowIndex = 6 -- Índice da linha inicial do sapo (linha 6)
-    finalSapoRowIndex = 0 -- Índice da linha inicial do sapo (linha 6)
+    finalSapoRowIndex = 0
     moveRow :: Int -> [Cell] -> [Cell]
     moveRow rowIndex row
-      | rowIndex `elem` [initialSapoRowIndex, finalSapoRowIndex] = row  -- Mantemos a linha do sapo fixa
+      | rowIndex `elem` [initialSapoRowIndex, finalSapoRowIndex] = row  -- Mantemos as linhas iniciais e finais do sapo fixa
       | rowIndex `elem` [2, 4] = moveBy 1 row  -- Troncos nas linhas 2 e 5 se movem 1 posição
       | rowIndex `elem` [1, 3, 5] = moveBy 2 row  -- Vitórias-régias nas linhas 2, 4 e 6 se movem 2 posições
       | otherwise = row
