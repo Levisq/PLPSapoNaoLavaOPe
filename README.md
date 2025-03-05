@@ -1,47 +1,58 @@
-#🐸 PLP 2024.2- O Sapo Não Lava o Pé
-Bem-vindo ao PLP - O Sapo Não Lava o Pé! 🎮
-Este projeto é uma recriação simplificada do clássico jogo Frogger do Atari 2600, adaptado para explorar conceitos de programação funcional utilizando Haskell. Com a ajuda da biblioteca Gloss, o jogo ganha vida com gráficos interativos e dinâmicos! 🌟
+# 🐸 PLP 2024.2 - O Sapo Não Lava o Pé  
 
-#📜 Sobre o Projeto
-PLP - O Sapo Não Lava o Pé é uma recriação simplificada e moderna do clássico jogo Frogger do Atari 2600, trazendo o desafio de atravessar um rio repleto de perigos em um cenário dinâmico e interativo.
-Desenvolvido exclusivamente em Haskell, o projeto utiliza a biblioteca Gloss para criar uma interface gráfica, demonstrando como conceitos de programação funcional podem ser aplicados na prática.
+Bem-vindo ao **PLP - O Sapo Não Lava o Pé**! 🎮  
+Este projeto é uma recriação simplificada do clássico jogo *Frogger* do Atari 2600, adaptado para explorar conceitos de programação funcional utilizando **Haskell**.  
+Com a ajuda da biblioteca **Gloss**, o jogo ganha vida com gráficos interativos e dinâmicos! 🌟  
 
-#🎮 Funcionalidades
-##Movimentação do jogador
-Controle o sapo para a esquerda, direita e para cima.
+---
 
-##Mundo dinâmico
-Troncos e vitórias-régias continuam se movendo constantemente, mesmo sem a ação do jogador.
+## 📜 Sobre o Projeto  
 
-##Cenário interativo
-Um rio perigoso onde a água é letal e plataformas móveis ajudam na travessia.
+**PLP - O Sapo Não Lava o Pé** é uma recriação simplificada e moderna do clássico jogo *Frogger* do Atari 2600, trazendo o desafio de atravessar um rio com perigos em um cenário dinâmico e interativo.  
 
-##Colisão realista
-Se o sapo cair na água, o jogo termina imediatamente.
+Desenvolvido exclusivamente em **Haskell**, o projeto utiliza a biblioteca **Gloss** para criar uma interface gráfica, demonstrando como conceitos de programação funcional podem ser aplicados na prática.  
 
-##Velocidade ajustada dos objetos
-Troncos e vitórias-régias possuem velocidades diferentes, aumentando o desafio.
+---
 
-#🌟 Elementos do Jogo
+## 🎮 Funcionalidades  
 
-##Fase única
-O cenário é representado como uma matriz (grid), contendo água, troncos, vitórias-régias e o sapo.
+1. **Movimentação do jogador**  
+   Controle o sapo para a esquerda, direita e para cima. Não é permitido voltar para trás.  
 
-##Sapo
-Personagem controlado pelo jogador.
+2. **Mundo dinâmico**  
+   Troncos e vitórias-régias continuam se movendo constantemente, mesmo sem a ação do jogador.  
 
-##Vitória-régia
-Plataforma móvel que carrega o sapo enquanto ele estiver sobre ela.
+3. **Cenário interativo**  
+   Um rio perigoso onde a água é letal e plataformas móveis ajudam na travessia.  
 
-##Água
-Obstáculo mortal. Cair na água retorna para o inicial.
+4. **Colisão realista**  
+   Se o sapo cair na água, o jogo termina imediatamente.  
 
-##Tronco
-Outra plataforma móvel que ajuda o sapo a atravessar o rio.
+5. **Velocidade ajustada dos objetos**  
+   Troncos e vitórias-régias possuem velocidades diferentes, aumentando o desafio.  
 
-#📚 Tecnologias Utilizadas
-###Haskell:
-Linguagem funcional utilizada para a lógica e estrutura do jogo.
+---
 
-###Gloss:
-Biblioteca gráfica usada para criar os elementos visuais e tornar o jogo interativo e dinâmico.
+## 🌟 Elementos do Jogo  
+
+- **Fase única**  
+  O cenário é representado como uma matriz (grid), contendo água, troncos, vitórias-régias e o sapo.  
+
+- **Sapo**  
+  Personagem controlado pelo jogador.  
+
+- **Vitória-régia**  
+  Plataforma móvel que carrega o sapo enquanto ele estiver sobre ela.  
+
+- **Água**  
+  Obstáculo mortal. Cair na água retorna ao ponto inicial.  
+
+- **Tronco**  
+  Outra plataforma móvel que ajuda o sapo a atravessar o rio.  
+
+---
+
+## 📚 Tecnologias Utilizadas  
+
+- **Haskell**: Linguagem funcional utilizada para a lógica e estrutura do jogo.  
+- **Gloss**: Biblioteca gráfica utilizada para criar os elementos visuais e tornar o jogo interativo.  
