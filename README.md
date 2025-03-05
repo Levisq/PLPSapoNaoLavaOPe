@@ -55,4 +55,9 @@ Desenvolvido exclusivamente em **Haskell**, o projeto utiliza a biblioteca **Glo
 ## 📚 Tecnologias Utilizadas  
 
 - **Haskell**: Linguagem funcional utilizada para a lógica e estrutura do jogo.  
-- **Gloss**: Biblioteca gráfica utilizada para criar os elementos visuais e tornar o jogo interativo.  
+- **Gloss**: Biblioteca gráfica utilizada para criar os elementos visuais e tornar o jogo interativo.
+
+---
+## 🚀 Como Executar
+-   Após usar o stack build, tenha certeza de que o freeglut.dll que está na pasta libs/bin seja colocado no seguinte caminho: .stack-work/install/bin.
+-   Precisamos que o executável do Sapo Não Lava o Pé esteja junto com o freeglut.dll.
