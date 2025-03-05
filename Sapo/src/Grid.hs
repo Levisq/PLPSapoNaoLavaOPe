@@ -1,24 +1,34 @@
-module Grid where
+module Grid (Cell(..), Grid, GameState(..), getCell, updateCell) where
 
+import Objetos (Tronco, Regia, Sapo)
 
 -- Tipos de celula e deriving EQ serve para comparar tipos de Cell usando == /=
--- Show Permite converter valores do tipo Cell em strings (útil para imprimir no terminal)
-data Cell = Empty | Water | Log | LilyPad | Player deriving (Eq, Show)
--- Meu gride vai ser uma lista com várias Cells
+-- Show Permite converter valores do tipo Cell em strings (Acho que vai ser útil para imprimir no terminal)
+data Cell = Empty | Water | TroncoCell Tronco | RegiaCell Regia | SapoCell Sapo | Terra 
+  deriving (Eq, Show)
+
+-- O grid é uma lista de listas de células
 type Grid = [[Cell]]
 
--- Acessa uma célula de forma segura
-getCell :: Grid -> (Int, Int) -> Maybe Cell
-getCell grid (x, y) =
-    if y >= 0 && y < length grid && x >= 0 && x < length (grid !! y)
-        then Just (grid !! y !! x)
-        else Nothing
+data GameState = GameState
+  { grid :: Grid
+    ,timeSinceLastMove :: Float
+  } deriving (Eq, Show)
 
--- Atualiza uma célula de forma segura
+-- Acessa uma célula de forma segura
+--o !! serve para acesar um indice especifioc dentro da lista
+getCell :: Grid -> (Int, Int) -> Maybe Cell
+getCell g (x, y) =
+  if y >= 0 && y < length g && x >= 0 && x < length (g !! y)
+    then Just (g !! y !! x)
+    else Nothing
+
+-- att uma celula
 updateCell :: Grid -> (Int, Int) -> Cell -> Maybe Grid
-updateCell grid (x, y) newCell =
-    if y >= 0 && y < length grid && x >= 0 && x < length (grid !! y)
-        then Just (take y grid ++
-                             [take x (grid !! y) ++ [newCell] ++ drop (x + 1) (grid !! y)] ++
-                             drop (y + 1) grid)
-        else Nothing
+updateCell g (x, y) newCell =
+  --verifica limites do x e y.
+  if y >= 0 && y < length g && x >= 0 && x < length (g !! y)
+    then Just (take y g ++
+               [take x (g !! y) ++ [newCell] ++ drop (x + 1) (g !! y)] ++
+               drop (y + 1) g)
+    else Nothing

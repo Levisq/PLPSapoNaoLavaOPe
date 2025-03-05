@@ -65,3 +65,9 @@ packages:
 #
 # Allow a newer minor version of GHC than the snapshot specifies
 # compiler-check: newer-minor
+extra-include-dirs:
+  - libs/include  # O caminho para a pasta que contém os arquivos de cabeçalho
+
+extra-lib-dirs:
+  - libs/lib      # O caminho para a pasta que contém as bibliotecas
+ 

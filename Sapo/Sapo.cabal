@@ -27,6 +27,7 @@ library
   exposed-modules:
       Grid
       Lib
+      Objetos
   other-modules:
       Paths_Sapo
   autogen-modules:
@@ -36,6 +37,7 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , gloss >=1.13.2.2 && <1.14
   default-language: Haskell2010
 
 executable Sapo-exe
@@ -50,6 +52,7 @@ executable Sapo-exe
   build-depends:
       Sapo
     , base >=4.7 && <5
+    , gloss >=1.13.2.2 && <1.14
   default-language: Haskell2010
 
 test-suite Sapo-test
@@ -65,4 +68,5 @@ test-suite Sapo-test
   build-depends:
       Sapo
     , base >=4.7 && <5
+    , gloss >=1.13.2.2 && <1.14
   default-language: Haskell2010
