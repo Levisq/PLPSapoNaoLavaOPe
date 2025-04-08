@@ -1,162 +1,162 @@
 :- use_module(library(lists)).
 :- use_module(library(system)).
 
-% 1. Grid Inicial
+% 1. Define a grade inicial do jogo com posições fixas do cenário.
+% A linha 0 representa o objetivo (terra), e a linha 6 a base inicial com o sapo.
 initial_grid([
-    [terra, terra, terra, terra, terra, terra, terra],   % Linha 0 (DESTINO)
-    [water, water, regia, water, water, water, water],    % Linha 1
+    [terra, terra, terra, terra, terra, terra, terra],   % Linha 0 (Destino)
+    [water, tronco, tronco, water, water, water, water],   % Linha 1
     [water, water, water, tronco, tronco, water, water],  % Linha 2
-    [water, water, water, regia, water, water, water],    % Linha 3
-    [water, water, water, tronco, tronco, water, water], % Linha 4
-    [regia, water, water, water, water, water, water],    % Linha 5
-    [terra, terra, terra, sapo, terra, terra, terra]     % Linha 6 (BASE)
+    [water, water, tronco, tronco, water, water, water],   % Linha 3
+    [water, water, water, tronco, tronco, water, water],  % Linha 4
+    [tronco, tronco, water, water, water, water, water],   % Linha 5
+    [terra, terra, terra, sapo, terra, terra, terra]      % Linha 6 (Base)
 ]).
 
-% Direção das linhas móveis
-direcao_linha(Y, direita) :- Y mod 2 =:= 1, Y > 0, Y < 6.
-direcao_linha(Y, esquerda) :- Y mod 2 =:= 0, Y > 0, Y < 6.
+% 2. Define a direção do movimento dos troncos em cada linha.
+% Linhas ímpares (1,3,5) movem para a direita; linhas pares (2,4) para a esquerda.
+direcao_linha(Y, direita) :- Y mod 2 =:= 1, between(1,5,Y).
+direcao_linha(Y, esquerda) :- Y mod 2 =:= 0, between(1,5,Y).
 
-% Movimento de linha
+% 3. Move uma linha uma posição para a direita (último elemento vai para o início).
 mover_linha(direita, Linha, Nova) :-
-    append([Ult], Ini, Linha),
-    append(Ini, [Ult], Nova).
+    append(Ini, [Ult], Linha),
+    append([Ult], Ini, Nova).
+
+% Move uma linha uma posição para a esquerda (primeiro elemento vai para o final).
 mover_linha(esquerda, Linha, Nova) :-
-    append(Ini, [Primeiro], Linha),
-    append([Primeiro], Ini, Nova).
+    append([Primeiro|Fim], [], Linha),
+    append(Fim, [Primeiro], Nova).
 
-% Movimenta objetos no grid, exceto as linhas 0 e 6
+% 4. Atualiza as linhas do grid, movendo apenas as linhas móveis (1 a 5).
+% As linhas 0 e 6 permanecem inalteradas.
 mover_objetos(Grid, NovoGrid) :-
-    findall(L, (
-        nth0(Y, Grid, Linha),
-        (Y =:= 0 ; Y =:= 6 -> NovaLinha = Linha
-        ; direcao_linha(Y, Dir), mover_linha(Dir, Linha, NovaLinha)),
-        L = NovaLinha
-    ), NovoGrid).
+    findall(LinhaAtualizada,
+        (nth0(Y, Grid, Linha),
+         (   member(Y, [0,6])
+         ->  LinhaAtualizada = Linha
+         ;   direcao_linha(Y, Dir),
+             mover_linha(Dir, Linha, LinhaAtualizada))
+        ),
+        NovoGrid).
 
-% Encontra a posição do sapo (incluindo células combinadas)
+% 5. Encontra a posição atual do sapo no grid.
+% Pode estar como sapo ou sapo_no_tronco.
 find_sapo(Grid, X-Y) :-
-    nth0(Y, Grid, Row),
-    (nth0(X, Row, sapo) -> true ;
-    (nth0(X, Row, sapo_no_tronco) -> true ;
-    nth0(X, Row, sapo_na_regia))).
+    nth0(Y, Grid, Linha),
+    (nth0(X, Linha, sapo) ; nth0(X, Linha, sapo_no_tronco)).
 
-% Células seguras (incluindo combinações)
+% 6. Define quais células são seguras para o sapo ocupar.
 pode_mover(terra).
 pode_mover(tronco).
-pode_mover(regia).
 pode_mover(sapo_no_tronco).
-pode_mover(sapo_na_regia).
 
-% Movimentos válidos
+% 7. Define os movimentos válidos: w (cima), s (baixo), a (esquerda), d (direita).
 move(w, X-Y, X-NY) :- NY is Y - 1.
 move(s, X-Y, X-NY) :- NY is Y + 1.
 move(a, X-Y, NX-Y) :- NX is X - 1.
 move(d, X-Y, NX-Y) :- NX is X + 1.
 
-% Substitui valor em lista
+% 8. Substitui um elemento em uma lista em uma posição específica.
 replace_in_list(0, New, [_|T], [New|T]).
 replace_in_list(I, New, [H|T], [H|R]) :-
-    I > 0, NI is I - 1, replace_in_list(NI, New, T, R).
+    I > 0,
+    NI is I - 1,
+    replace_in_list(NI, New, T, R).
 
-% Atualiza célula no grid
+% 9. Atualiza uma célula específica do grid.
 update_cell(Grid, X-Y, Val, NewGrid) :-
     nth0(Y, Grid, Linha),
-    replace_in_list(X, Val, Linha, NL),
-    replace_in_list(Y, NL, Grid, NewGrid).
+    replace_in_list(X, Val, Linha, NovaLinha),
+    replace_in_list(Y, NovaLinha, Grid, NewGrid).
 
-% Converte célula com sapo para o tipo combinado
+% 10. Define a célula resultante quando o sapo ocupa outra célula.
 cria_celula_com_sapo(tronco, sapo_no_tronco).
-cria_celula_com_sapo(regia, sapo_na_regia).
 cria_celula_com_sapo(terra, sapo).
 
-% Restaura célula quando sapo sai
+% Restaura uma célula após o sapo sair dela.
 restaura_celula(sapo_no_tronco, tronco).
-restaura_celula(sapo_na_regia, regia).
 restaura_celula(sapo, terra).
 
-% Atualização principal - Versão "andar junto"
+% 11. Atualiza o estado do jogo após uma tentativa de movimento.
 update(Grid, Move, FinalGrid) :-
-    ( find_sapo(Grid, OldX-OldY),
-      move(Move, OldX-OldY, NX-NY),
-      NX >= 0, NX < 7, NY >= 0, NY < 7,
-      nth0(NY, Grid, Row), nth0(NX, Row, Cell),
+    (   find_sapo(Grid, OldX-OldY),
+        move(Move, OldX-OldY, NX-NY),
+        between(0,6,NX), between(0,6,NY),
+        nth0(NY, Grid, LinhaAlvo),
+        nth0(NX, LinhaAlvo, Celula),
 
-      % Remove sapo da posição antiga
-      nth0(OldY, Grid, OldRow),
-      nth0(OldX, OldRow, OldCell),
-      (restaura_celula(OldCell, RestoredCell) -> true ; RestoredCell = water),
-      update_cell(Grid, OldX-OldY, RestoredCell, G1),
+        % Remove o sapo da posição anterior
+        nth0(OldY, Grid, LinhaOrig),
+        nth0(OldX, LinhaOrig, CelulaOrig),
+        (   restaura_celula(CelulaOrig, Restaurada)
+        ->  update_cell(Grid, OldX-OldY, Restaurada, GridTemp)
+        ;   GridTemp = Grid),
 
-      % Move sapo para nova posição
-      ( Cell = water ->
-          format('Caiu na agua! Reiniciando o jogo...\n'),
-          initial_grid(FinalGrid)
-      ; pode_mover(Cell) ->
-          ( cria_celula_com_sapo(Cell, NewCell) ->
-              update_cell(G1, NX-NY, NewCell, G2)
-          ; update_cell(G1, NX-NY, sapo, G2)
-          ),
-          mover_objetos(G2, FinalGrid)
-      ;
-          format('Caiu na agua! Reiniciando o jogo...\n'),
-          initial_grid(FinalGrid)
-      )
-    ;
-      mover_objetos(Grid, FinalGrid)
+        % Trata nova posição
+        (   Celula = water
+        ->  format('Caiu na agua! Reiniciando...~n'),
+            initial_grid(FinalGrid)
+        ;   pode_mover(Celula)
+        ->  (   cria_celula_com_sapo(Celula, NovaCelula)
+            ->  update_cell(GridTemp, NX-NY, NovaCelula, GridMovido)
+            ;   update_cell(GridTemp, NX-NY, sapo, GridMovido)),
+            mover_objetos(GridMovido, FinalGrid)
+        ;   format('Movimento invalido!~n'),
+            FinalGrid = Grid
+        )
+    ;   mover_objetos(Grid, FinalGrid)
     ).
 
-% Impressão do grid
+% 12. Exibe o grid no terminal de forma formatada.
 print_grid(Grid) :-
-    nl, maplist(print_row, Grid), nl.
+    nl,
+    maplist(print_row, Grid),
+    nl.
 
+% Imprime uma linha do grid.
 print_row(Row) :-
-    write('['), maplist(print_cell, Row), write(']'), nl.
+    write('['),
+    maplist(print_cell, Row),
+    write(']'), nl.
 
-% Representação textual para cada célula
-print_cell(terra) :- write(' terra ').
-print_cell(water) :- write(' water ').
-print_cell(tronco) :- write(' tronco ').
-print_cell(regia) :- write(' regia ').
-print_cell(sapo) :- write(' sapo ').
-print_cell(sapo_no_tronco) :- write(' sapo/t ').
-print_cell(sapo_na_regia) :- write(' sapo/r ').
-print_cell(X) :- write(' '), write(X), write(' ').  % Fallback
+% Imprime uma célula individual com formatação.
+print_cell(terra)           :- write(' terra ').
+print_cell(water)           :- write(' water ').
+print_cell(tronco)          :- write(' tronco').
+print_cell(sapo)            :- write(' sapo  ').
+print_cell(sapo_no_tronco)  :- write(' sapo/t').
+print_cell(_)               :- write(' ???   ').
 
-% Loop principal
+% 13. Loop principal do jogo, recebe entrada do usuário e atualiza o jogo.
 game_loop(Grid) :-
     print_grid(Grid),
-    ( find_sapo(Grid, X-0) ->  % Verifica se chegou ao topo
-        print_grid(Grid),
-        format('PARABENS! O sapo chegou ao destino!\n'),
-        halt
-    ;
-        format('Use WASD para mover (Q para sair): '),
+    (   find_sapo(Grid, _-0)
+    ->  format('~nO Sapo não lavou o pé!~n~n'), halt
+    ;   format('~nMovimento (WASD): '),
         get_single_char(Code),
-        char_code(Char, Code),
-        downcase_atom(Char, Move),
-        ( Move == 'q' ->
-            format('Saindo do jogo...\n'), halt
-        ; member(Move, [w,a,s,d]) ->
-            update(Grid, Move, NewGrid),
-            sleep(0.3),
-            game_loop(NewGrid)
-        ;
-            format('Movimento invalido! Use WASD.\n'),
+        char_code(Comando, Code),
+        downcase_atom(Comando, Move),
+        (   Move == q
+        ->  format('~nJogo encerrado.~n'), halt
+        ;   member(Move, [w,a,s,d])
+        ->  update(Grid, Move, NovoGrid),
+            sleep(0.5),
+            game_loop(NovoGrid)
+        ;   format('~nComando invalido!~n'),
             game_loop(Grid)
         )
     ).
 
-% Início do jogo
+% 14. Inicializa o jogo.
 play :-
     initial_grid(Grid),
-    format('Bem-vindo ao Jogo do Sapo!~n'),
-    format('Objetivo: Leve o sapo ate o topo (linha 0).~n'),
+    format('~n=== JOGO DO SAPO ===~n~n'),
+    format('Objetivo: Chegar ao topo (linha 0)~n'),
     format('Controles:~n'),
-    format('  W - Cima~n  A - Esquerda~n  S - Baixo~n  D - Direita~n~n'),
-    format('Regras:~n'),
-    format('1. So pode pular em troncos (tronco) e regias (regia)~n'),
-    format('2. Cair na agua (water) reinicia o jogo~n'),
-    format('3. Troncos e regias se movem automaticamente~n~n'),
+    format('  W - Cima~n  A - Esquerda~n  S - Baixo~n  D - Direita~n  Q - Sair~n~n'),
     game_loop(Grid).
 
+% Inicia o jogo automaticamente ao carregar o programa.
 :- initialization(play).
+
